@@ -1,5 +1,4 @@
-use std::time::{Duration, Instant};
-
+use std::time::{Instant};
 fn main() {
     testing(2, 100, 110, Some((101, 103)));
     testing(4, 100, 110, Some((103, 107)));
@@ -15,60 +14,29 @@ fn step(g: i32, m: u64, n: u64) -> Option<(u64, u64)> {
     let g = g.abs() as u64;
     // Init a new list of primes
     let mut primes: Vec<u64> = Vec::new();
-    // If m comes after 3, include 2 and 3
-    if m >= 3 {
-        primes.push(2);
-        primes.push(3);
-    } else {
-        // For regular, probably return 2
-        return None;
-    }
 
     // For every number leading up to and including n
-    for i in 4..n + 1 {
+    for i in m..n + 1 {
         // Check if it is in the right form
         if is_prime(i) {
             // Then add it
             primes.push(i);
         }
     }
-    println!("Primes took {:?}", snap.elapsed());
-    // // Print primes
-    // for i in primes.iter() {
-    //     println!("{}", i);
-    // }
+    println!("Finding primes took {:?}", snap.elapsed());
 
     let snap = Instant::now();
-    // Get primes larger than m
-    let mut m_point = 0;
-    for (i, num) in primes.iter().enumerate() {
-        if *num > m {
-            // println!("{} is greater than {}", *num, m);
-            m_point = i;
-            break;
-        }
-    }
-    // for (i, &num) in (&primes[m_point..]).iter().enumerate() {
-    //     println!("{}", num);
-    // }
-
-    let current = &primes[m_point..];
-    // // Naively compare diffs
-    let length = current.len();
-    // println!("length is {}", length);
-    // println!("starting at {}", m_point);
-    for (i, &num) in current.iter().enumerate() {
-        // println!("testing {}", num);
+    // Naively compare diffs
+    let length = primes.len();
+    for (i, &num) in primes.iter().enumerate() {
         for j in i..length {
-            // println!("{} - {}", &primes[j+m_point], num);
-            // println!("j is {}, i is {}, num is {}, prime is {}", j, i, num, current[j]);
-            if g == current[j] - num {
-                println!("Found {} and {} in {:?}", num, current[j], snap.elapsed());
-                return Some((num, current[j]));
+            if g == primes[j] - num {
+                println!("Finding res took {:?}", snap.elapsed());
+                return Some((num, primes[j]));
             }
         }
     }
-    println!("{:?}", snap.elapsed());
+    println!("Finding res took {:?}", snap.elapsed());
     None
 }
 
@@ -98,16 +66,17 @@ fn is_prime(n: u64) -> bool {
     true
 }
 
-// Bad algo
-// fn is_prime(n: u64) -> bool {
-//     for i in 2..n {
-//         if n % i == 0 {
-//             return false;
-//         }
-//     }
-//     true
-// }
-
 fn testing(g: i32, m: u64, n: u64, exp: Option<(u64, u64)>) -> () {
-    assert_eq!(step(g, m, n), exp);
+    let res = step(g, m, n);
+    println!("{:?}, {:?}", res, exp);
+    assert_eq!(res, exp);
+}
+
+#[test]
+fn tests() {
+    testing(2, 100, 110, Some((101, 103)));
+    testing(4, 100, 110, Some((103, 107)));
+    testing(8, 30000, 100000, Some((30089, 30097)));
+    testing(11, 30000, 100000, None);
+    testing(2, 10000000, 11000000, Some((10000139, 10000141)));
 }
