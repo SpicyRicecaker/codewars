@@ -43,7 +43,8 @@ fn step(g: i32, m: u64, n: u64) -> Option<(u64, u64)> {
 // Takes in number and returns a prime based on the fact that
 // All primes over 2,3 are in the form 6k + i where i = -1, 0, 1, 2, 3, 4 and k is a positive integer
 // Algo from Wikipedia, [Primality Test](https://en.wikipedia.org/wiki/Primality_test)
-fn is_prime(n: u64) -> bool {
+
+pub fn is_prime(n: u64) -> bool {
     // If the number is less than or equal to three,
     // Return prime basically if it is 2 or 3
     if n <= 3 {

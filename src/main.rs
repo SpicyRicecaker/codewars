@@ -1,0 +1,4 @@
+use codewars::*;
+
+fn main() {
+}
