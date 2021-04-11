@@ -1,9 +1,11 @@
+use std::time::{Duration, Instant};
+
 pub fn main() {
     let res = sum_pairs(&[1, 2, 3, 4, 1, 0], 2);
-    dbg!(res);
 }
 
 fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
+    let start = Instant::now();
     let mut beg_index = 0;
     let mut end_index = ints.len() - 1;
 
@@ -13,7 +15,7 @@ fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
     // then store pair and its indices
     for (i, min) in ints.iter().enumerate() {
         for (j, max) in ints[i + 1..].iter().enumerate() {
-            let j = j+i+i;
+            let j = j + i + 1;
             if min + max == s && j <= end_index && i >= beg_index {
                 pair = Some((*min, *max));
                 beg_index = i;
@@ -21,9 +23,27 @@ fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
             }
         }
     }
+    println!("{} Total Time: {:?}", s, start.elapsed());
 
     pair
 }
+
+// fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
+//     let mut beg_index = 0;
+//     let mut end_index = ints.len() - 1;
+
+//     let mut pair = None;
+
+//     // double loop, if 2 sums = sum && end index < index
+//     // then store pair and its indices
+//     ints.iter().enumerate()
+//     .map(|(i, min)| ints[i+1..].iter().enumerate()
+//     .map(|j,max|return if min + max == s && j <= end_index && i >= beg_index {})
+
+// )
+
+//     pair
+// }
 
 #[test]
 fn returns_expected() {
@@ -35,6 +55,7 @@ fn returns_expected() {
     let l6 = [4, -2, 3, 3, 4];
     let l7 = [0, 2, 0];
     let l8 = [5, 9, 13, -3];
+    let l9 = [1; 10000];
     assert_eq!(sum_pairs(&l1, 8), Some((1, 7)));
     assert_eq!(sum_pairs(&l2, -6), Some((0, -6)));
     assert_eq!(sum_pairs(&l3, -7), None);
@@ -43,4 +64,5 @@ fn returns_expected() {
     assert_eq!(sum_pairs(&l6, 8), Some((4, 4)));
     assert_eq!(sum_pairs(&l7, 0), Some((0, 0)));
     assert_eq!(sum_pairs(&l8, 10), Some((13, -3)));
+    assert_eq!(sum_pairs(&l9, 127), Some((13, -3)))
 }
