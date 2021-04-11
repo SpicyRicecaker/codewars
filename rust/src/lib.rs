@@ -6,3 +6,5 @@ pub mod which_are_in;
 pub mod replace_with_alphabet;
 pub mod make_upper_case;
 pub mod sum_of_pairs;
+pub mod count_the_digit;
+pub mod dubstep;
