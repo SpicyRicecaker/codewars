@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::time::Instant;
 
 pub fn main() {
@@ -51,8 +51,11 @@ fn sum_pairs_old(ints: &[i8], s: i8) -> Option<(i8, i8)> {
 //     None
 // }
 
-// Fkin big brain right here
-fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
+// Fkin big brain right here,
+// We use a hashmap to stored all our seen sets
+// Then we can lookup seen values as we go along
+// Our current number is the rightmost, so any match would be the best one!
+fn sum_pairs_personal(ints: &[i8], s: i8) -> Option<(i8, i8)> {
     let mut candidates: HashMap<i8, bool> = HashMap::new();
     for n in ints.iter() {
         // Check if there is a match in the hashmap
@@ -64,6 +67,18 @@ fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
         candidates.entry(*n).or_insert(true);
     }
 
+    None
+}
+
+// Best solution, uses a hashset, which is basically hashmap with t/f, so it's slightly better. Same algo tho
+fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
+    let mut seen: HashSet<i8> = HashSet::new();
+    for &n in ints.iter() {
+        if seen.contains(&(s - n)) {
+            return Some((s - n, n));
+        }
+        seen.insert(n);
+    }
     None
 }
 
