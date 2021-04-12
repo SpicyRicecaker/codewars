@@ -8,3 +8,4 @@ pub mod make_upper_case;
 pub mod sum_of_pairs;
 pub mod count_the_digit;
 pub mod dubstep;
+pub mod double_cola;
