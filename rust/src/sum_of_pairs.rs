@@ -1,31 +1,12 @@
 use std::collections::HashMap;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 pub fn main() {
-    let res = sum_pairs(&[1, 2, 3, 4, 1, 0], 2);
+    let res = sum_pairs(&[5, 9, 13, -3], 10);
+    dbg!(res);
 }
 
-struct Cache <'a>{
-    sumcache: HashMap<&'a i8, HashMap<&'a i8, i8>>,
-}
-
-impl<'a> Cache <'a> {
-    fn new() -> Self {
-        Cache {
-            sumcache: HashMap::new(),
-        }
-    }
-
-    fn get(&mut self, first_num: &'a i8, second_num: &'a i8) -> i8 {
-        let first = self.sumcache.entry(first_num).or_insert_with(HashMap::new);
-        let second = first.entry(second_num).or_insert(first_num + second_num);
-        println!("successful access of {} + {}", first_num, second_num);
-
-        *second
-    }
-}
-
-fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
+fn sum_pairs_old(ints: &[i8], s: i8) -> Option<(i8, i8)> {
     let start = Instant::now();
     let mut beg_index = 0;
     let mut end_index = ints.len() - 1;
@@ -34,12 +15,11 @@ fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
 
     // double loop, if 2 sums = sum && end index < index
     // then store pair and its indices
-    let mut cache = Cache::new();
     // cache.get(*min, *max)
     for (i, min) in ints.iter().enumerate() {
         for (j, max) in ints[i + 1..].iter().enumerate() {
             let j = j + i + 1;
-            if  cache.get(min, max) == s && j <= end_index && i >= beg_index {
+            if min + max == s && j <= end_index && i >= beg_index {
                 pair = Some((*min, *max));
                 beg_index = i;
                 end_index = j;
@@ -55,6 +35,36 @@ fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
     println!("{} Total Time: {:?}", s, start.elapsed());
 
     pair
+}
+
+// fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
+//     let candidates: HashMap<i8, bool> = HashMap::new();
+//     ints.iter().map(|n| match candidates.entry(s-n) {
+//         std::collections::hash_map::Entry::Occupied(_) => {
+//             return Some((s-n, *n));
+//         }
+//         std::collections::hash_map::Entry::Vacant(_) => {
+//             return
+//         }
+//     });
+
+//     None
+// }
+
+// Fkin big brain right here
+fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
+    let mut candidates: HashMap<i8, bool> = HashMap::new();
+    for n in ints.iter() {
+        // Check if there is a match in the hashmap
+        if let std::collections::hash_map::Entry::Occupied(_) = candidates.entry(s - n) {
+            // If there is a match return it
+            return Some((s - n, *n));
+        }
+        // Otherwise, add our current number to possible pairings
+        candidates.entry(*n).or_insert(true);
+    }
+
+    None
 }
 
 // fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
@@ -84,7 +94,7 @@ fn returns_expected() {
     let l6 = [4, -2, 3, 3, 4];
     let l7 = [0, 2, 0];
     let l8 = [5, 9, 13, -3];
-    let l9 = [1; 10000];
+    // let l9 = [1; 10000];
     assert_eq!(sum_pairs(&l1, 8), Some((1, 7)));
     assert_eq!(sum_pairs(&l2, -6), Some((0, -6)));
     assert_eq!(sum_pairs(&l3, -7), None);
@@ -93,5 +103,5 @@ fn returns_expected() {
     assert_eq!(sum_pairs(&l6, 8), Some((4, 4)));
     assert_eq!(sum_pairs(&l7, 0), Some((0, 0)));
     assert_eq!(sum_pairs(&l8, 10), Some((13, -3)));
-    assert_eq!(sum_pairs(&l9, 127), Some((13, -3)))
+    // assert_eq!(sum_pairs(&l9, 127), Some((13, -3)))
 }
