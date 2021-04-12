@@ -1,7 +1,28 @@
+use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
 pub fn main() {
     let res = sum_pairs(&[1, 2, 3, 4, 1, 0], 2);
+}
+
+struct Cache <'a>{
+    sumcache: HashMap<&'a i8, HashMap<&'a i8, i8>>,
+}
+
+impl<'a> Cache <'a> {
+    fn new() -> Self {
+        Cache {
+            sumcache: HashMap::new(),
+        }
+    }
+
+    fn get(&mut self, first_num: &'a i8, second_num: &'a i8) -> i8 {
+        let first = self.sumcache.entry(first_num).or_insert_with(HashMap::new);
+        let second = first.entry(second_num).or_insert(first_num + second_num);
+        println!("successful access of {} + {}", first_num, second_num);
+
+        *second
+    }
 }
 
 fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
@@ -13,16 +34,24 @@ fn sum_pairs(ints: &[i8], s: i8) -> Option<(i8, i8)> {
 
     // double loop, if 2 sums = sum && end index < index
     // then store pair and its indices
+    let mut cache = Cache::new();
+    // cache.get(*min, *max)
     for (i, min) in ints.iter().enumerate() {
         for (j, max) in ints[i + 1..].iter().enumerate() {
             let j = j + i + 1;
-            if min + max == s && j <= end_index && i >= beg_index {
+            if  cache.get(min, max) == s && j <= end_index && i >= beg_index {
                 pair = Some((*min, *max));
                 beg_index = i;
                 end_index = j;
             }
         }
     }
+
+    // let m = ints.iter()
+    // .filter(|&&n| n < s)
+    // .enumerate()
+    // .map(|(i, min)| ints[i+1..].iter().enumerate()
+    // .map(|(j,max)|return if min + max == s && j <= end_index && i >= beg_index {Some((*min, *max))} else {None}));
     println!("{} Total Time: {:?}", s, start.elapsed());
 
     pair
