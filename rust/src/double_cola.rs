@@ -54,8 +54,26 @@ fn if_arithmetic_sequence_lol_i_smart(names: &Names, n: usize) -> Name {
     let diff = n - x_n_1_sum;
     // divide by num of names
     let index = (diff as f64 / names.len() as f64).trunc() as usize;
-    println!("for sum={}, x={}, x_n_1={}, x_n_1_sum={}, diff={}, index={}", n, x, x_n_1, x_n_1_sum, diff, index);
+    println!(
+        "for sum={}, x={}, x_n_1={}, x_n_1_sum={}, diff={}, index={}",
+        n, x, x_n_1, x_n_1_sum, diff, index
+    );
 
+    *names.get(index).unwrap()
+}
+
+fn who_is_next(names: &Names, n: usize) -> Name {
+    let len = names.len();
+    // Solving geometric series equation`n-1=5(2^x-1)` for x, rounding down to get the *past* term`n-1`
+    let x = ((n as f64 - 1_f64) / len as f64 + 1_f64).log2().trunc();
+    // find # of duplicated persons at *current* term `n`
+    let current_duplications = 2_usize.pow(x as u32);
+    // find total number of colas drunk at `n-1` using geometric series formula
+    let x_sum = len * (2_usize.pow(x as u32) - 1);
+    // find diff between colas drunk at `n-1` and colas drunk at n
+    let diff = n - x_sum - 1;
+    // divide diff by # of current duplicated ppl
+    let index = (diff as f64 / current_duplications as f64).trunc() as usize;
     *names.get(index).unwrap()
 }
 
@@ -77,5 +95,36 @@ mod tests {
         assert_eq!(who_is_next(names, 6), Name::Sheldon);
         assert_eq!(who_is_next(names, 52), Name::Penny);
         assert_eq!(who_is_next(names, 7_230_702_951), Name::Leonard);
+    }
+    #[test]
+    fn howard_tests() {
+        let names = &vec![
+            Name::Sheldon,
+            Name::Leonard,
+            Name::Penny,
+            Name::Rajesh,
+            Name::Howard,
+        ];
+
+        assert_eq!(who_is_next(names, 5), Name::Howard);
+        assert_eq!(who_is_next(names, 15), Name::Howard);
+        assert_eq!(who_is_next(names, 35), Name::Howard);
+        assert_eq!(who_is_next(names, 155), Name::Howard);
+    }
+
+    #[test]
+    fn leonard_tests() {
+        let names = &vec![
+            Name::Sheldon,
+            Name::Leonard,
+            Name::Penny,
+            Name::Rajesh,
+            Name::Howard,
+        ];
+
+        assert_eq!(who_is_next(names, 8), Name::Leonard);
+        assert_eq!(who_is_next(names, 11), Name::Penny);
+        assert_eq!(who_is_next(names, 13), Name::Rajesh);
+        assert_eq!(who_is_next(names, 155), Name::Howard);
     }
 }

@@ -1,5 +1,5 @@
 use codewars::*;
 
 fn main() {
-    codewars::double_cola::main();
+    codewars::rgb_to_hex_conversion::main();
 }
