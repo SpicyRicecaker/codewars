@@ -10,3 +10,4 @@ pub mod count_the_digit;
 pub mod dubstep;
 pub mod double_cola;
 pub mod rgb_to_hex_conversion;
+pub mod sum_by_factors;

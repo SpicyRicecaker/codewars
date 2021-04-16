@@ -7,7 +7,7 @@ pub fn main() {
 //     Number(i32)
 // }
 
-fn rgb(r: i32, g: i32, b: i32) -> String {
+fn rgb_first(r: i32, g: i32, b: i32) -> String {
     let mut res = String::new();
     let to_hex_digit = |int: i32| match int {
         10 => 'A',
@@ -25,6 +25,28 @@ fn rgb(r: i32, g: i32, b: i32) -> String {
     }
 
     res
+}
+
+// best solution (still came up with using my own) using rust's built-in hex formatter
+fn rgb_pre(r: i32, g: i32, b: i32) -> String {
+    let round = |n: i32| match n {
+        n if n < 0 => 0,
+        n if n > 255 => 255,
+        _ => n,
+    };
+
+    [r, g, b]
+        .iter()
+        .map(|n| format!("{:02X}", round(*n)))
+        .collect::<String>()
+}
+
+// actual best solution, using best solution and current solution
+fn rgb(r: i32, g: i32, b: i32) -> String {
+    [r, g, b]
+        .iter()
+        .map(|&n| format!("{:02X}", n.min(255).max(0)))
+        .collect::<String>()
 }
 
 fn append_char() {
@@ -46,13 +68,13 @@ macro_rules! compare {
 
 #[cfg(test)]
 mod sample_tests {
-    use self::super::*;
+    use super::*;
 
     #[test]
     fn tests() {
+        compare!(rgb(255, 255, 255), "FFFFFF");
         compare!(rgb(0, 0, 0), "000000");
         compare!(rgb(1, 2, 3), "010203");
-        compare!(rgb(255, 255, 255), "FFFFFF");
         compare!(rgb(254, 253, 252), "FEFDFC");
         compare!(rgb(-20, 275, 125), "00FF7D");
     }
